@@ -1,132 +1,147 @@
-#include "string"
-#include <stdio.h>
 #include <iostream>
 using namespace std;
-#define WARNUM createSeq[team][createNum]
+#include <stdio.h>
+#include <string.h>
 
+#define ARMYNUM makingSque[Army][makingNum]
+//要制造武士序号
 
-char Knight[5][50] = {"dragon", "ninja", "iceman", "lion", "wolf"};
-char Team[2][50] = {"Red", "Blue"};
+const char armyName[2][5] ={"Red", "Blue"}; //军团名称
+const char WarriorName[5][10] = {"dragon", "ninja", "iceman", "lion", "wolf"};  //武士名称
+const int makingSque[2][5] = { { 2, 3, 4, 1, 0 }, { 3, 0, 1, 2, 4 }}; //武士制造顺序
 
-int createSeq[2][5] = {2, 3, 4, 1, 0, 3, 0, 1, 2, 4}; //产生序列
-
-int knightHp[5] = {0};//新出生的英雄生命元
-
-
-class headquarter //部落
+//类 headquarter：一个军团的参数以及该军团战士的制造
+class headquarter
 {
 private:
-    int hp; //生命元
-	int hs[4]; //时间编号
-    int team; //属于哪个总部 0表示红 1表示蓝
-    int knightCout[5];//英雄数量 0~4表示dragon~wolf
-    int createNum; //本次产生的英雄序号
+	int Army; //所属军团 0:红 1:蓝 
+	int Warriors[5]; //已生成的5种武士数量
+	int Time[4];//前三个表示时间，后一个表示序号
+	int HP;  //生命元，如果为-1则证明已经没得制造了
+	int makingNum; //准备生成的战士序号
+
 public:
-
-    headquarter(int hp_, int team_) //初始化生命元
-    {
-		int i;
-        hp = hp_;
-        team = team_; //选择队伍
-		createNum = 0;
-		for (i = 0; i < 4; i++)
-		{
-			hs[i] = 0;
-		}
-
-		for (i = 0; i < 5; i++)
-		{
-			knightCout[i] = 0;
-		}
-		
-    }
-    int createKnight(void); //生成士兵 i + 1为序号
-	void Print(void); //多重打印
-    void numUp(void) //编号++
-    {
-    	hs[3]++;
-    	hs[0] = hs[3] / 100;
-    	hs[1] = hs[3] / 10 - hs[0] * 100;
-    	hs[2] = hs[3] % 10;
-
-
-    }
-};
-int headquarter::createKnight(void) //生成士兵
-{
-	int n = 0; //循环次数
-
-	if (hp == -1)
-		return 0; //生命元已经用完了
-
-	numUp(); //编号++
-	while ( hp < knightHp[WARNUM] )
+	headquarter(int Army_, int HP_) : Army(Army_), HP(HP_) //初始化
 	{
-    	createNum++;
-    	if (createNum > 4)
-    		createNum = 0;
-
-    	n++;
-
-		if ( (n > 5) || (hp == 0)) //循环一周后 生命值不可能生成英雄了
-    	{
-    		//red headquarter stops making warriors
-    		printf("%d%d%d ",hs[0], hs[1], hs[2]);
-    		printf("%s headquarter stops making warriors\n", Team[team]);
-    		hp = -1;
-    		return 0;
-    	}
+		memset(Warriors, 0, sizeof(Warriors)); 
+		memset(Time, 0, sizeof(Time));
+		makingNum = 0; 
+		//数据清零
 	}
 
-	knightCout[WARNUM]++; //该英雄数量加1
-	hp -= knightHp[WARNUM]; //生命元减少
+	void makingCount(void);//转到下一个制造参数
+	void timeCount(void);  //时间以及编号增加
+	int Making(int * WarriorHP) ; //单次制造武士
+	
+};
 
+// 函数——makingCount 转到下一个制造参数
+void headquarter::makingCount(void)
+{
+	makingNum++;
+	if ( makingNum > 4 )
+		makingNum = 0;  //循环制作
+}
 
-	//000 red iceman 1 born with strength 5,1 iceman in red headquarter
-	printf("%d%d%d %s %s %d born with", \
-			hs[0], hs[1], hs[2], Team[team], Knight[WARNUM], hs[3]);
-	printf(" strength %d,%d %s in %s headquarter\n", \
-			knightHp[WARNUM], knightCout[WARNUM], Knight[WARNUM], Team[team]);
+// 函数——timeCount 表示时间以及编号增加1
+void headquarter::timeCount(void) 
+{
+	Time[3]++;
+	Time[0] = Time[3] / 100;
+	Time[1] = Time[3] / 10 - Time[0] * 100;
+	Time[2] = Time[3] % 10;
+}
 
-    createNum++;
-    if (createNum > 4)
-        createNum = 0;
+// 函数——Making 功能为单次制造武士
+// 参数——WarriorHp是个数组 表示各个武士的生命元
+// 返回——0：造完 1：未造完
+int headquarter::Making(int * WarriorHP) 
+{
+	int n = 0;
+	if ( HP == -1 )
+		return 0;  //已经制造完成，不需要制造了
+
+	while ( HP < WarriorHP[ARMYNUM] ) //如果当前要制造武士的生命元不足时
+	{
+		n++;
+		makingCount(); //下一个武士
+
+		if ( ( n > 5 ) || ( HP == 0 ) )
+		{
+			HP = -1; //已经制造完成
+			cout << Time[0] << Time[1] << Time[2]; //输出标号
+			cout << " " << armyName[Army] << " headquarter stops making warriors" << endl;
+			return 0; 
+		}
+	}
+
+	
+	HP -= WarriorHP[ARMYNUM]; //删掉生命元
+	Warriors[ARMYNUM]++; //已拥有武士数量增加
+
+	//004 blue lion 5 born with strength 5,2 lion in red headquarter
+	cout << Time[0] << Time[1] << Time[2]; //输出标号
+	cout << " " << armyName[Army] << " "; //输出军团 
+	cout << WarriorName[ARMYNUM] << " " << Time[3] + 1 << " ";
+	cout << "born with strength " << WarriorHP[ARMYNUM] << ",";
+	cout << Warriors[ARMYNUM] << " " << WarriorName[ARMYNUM] << " ";
+	cout << "in " << armyName[Army] << " headquarter" << endl;
+	//004 blue lion 5 born with strength 5,2 lion in red headquarter
+
+	makingCount();
+	timeCount();
 
 	return 1;
 }
 
-void headquarter::Print(int cas)
-{
-	int hpSum[cas];
-	
-}
+//函数——makingWarrior 制造武士
+void makingWarrior(void);
 
 int main(void)
 {
+	makingWarrior();
+	//int WHP[5] = {4, 5, 6, 7, 8};
+	//headquarter c1(1, 20);
+	//while ( c1.Making( WHP ) );
+	return 0;
+}
 
-	int cas = 0;
-	int hpSum = 0;
-    int n = 1;
+void makingWarrior(void)
+{
+	int cas; //多少组数据
+	cin >> cas;
 
-	scanf_s("%d", &cas);
-	scanf_s("%d", &hpSum);
-	scanf_s("%d %d %d %d %d", knightHp + 0, knightHp + 1, knightHp + 2, \
-							knightHp + 3, knightHp + 4);
+	int *headquarterHP = new int [cas]; 
+	int **warriorHP = new int*[cas];
 
-	cout << "case:" << cas <<endl;
-	headquarter c1(hpSum, 0);
-	headquarter c2(hpSum, 1);
+	for (int i = 0; i < cas; i++)
+	{
+		warriorHP[i] = new int[5];
+	}
 
-	while (1)
-    {
-        if ( !c1.createKnight() )
-			n++;
-        if ( !c2.createKnight() )
-			n++;
-		if (n == 2)
-			break;
-		n = 0;
-    }
-    return 0;
+	for (int i = 0; i < cas; i++)
+	{
+		cin >> headquarterHP[i];
+		scanf_s("%d %d %d %d %d", warriorHP[i] + 0, warriorHP[i] + 1, \
+								  warriorHP[i] + 2, warriorHP[i] + 3, warriorHP[i] + 4);
+	}
 
+	for (int i = 0; i < cas; i++)
+	{
+		headquarter Red(0, headquarterHP[i]);
+		headquarter Blue( 1, headquarterHP[i] );
+		
+		cout << "Case:" << i + 1 << endl;
+
+		while (1)
+		{
+			int n = 2;
+			n -= Red.Making(warriorHP[i]);
+			n -= Blue.Making(warriorHP[i]);
+			if ( n == 2 )
+				break;
+		}
+	}
+	
+	
 }

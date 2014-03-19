@@ -1,0 +1,14 @@
+类中    static const double PI=3.1416;
+error：只有静态常量整型数据成员才可以在类中初始化
+常整型静态数据成员可以在类中直接初始化，而常实型静态数据成员不可以
+ 
+class circle
+{
+int a; // 普通变量，不能在类中初始化
+static int b; // 静态变量，不能在类中初始化
+static const int c=2; // 静态常量，可以在类中初始化
+static const double PI=3.1416;//error C2864: 只有静态常量整型数据成员才可以在类中初始化
+} ;
+ 
+b可以在类外进行初始化，且所有对象共享一个b的值：
+int circle::b = 2;
