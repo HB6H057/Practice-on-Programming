@@ -5,10 +5,9 @@
 #include "iostream"
 using namespace std;
 class c3;
-
 class c1{
 private:
-	int dat;
+    int dat;
 public:
 	c1()
 	{
@@ -25,7 +24,7 @@ public:
 	{
 		water = 2;
 	}
-	friend void c3::Print1; //友元函数
+	friend void c3::Print1(void); //友元函数
 };
 
 
@@ -39,14 +38,17 @@ public:
 	void Print2(void)
 	{
 		cout << c1.dat << endl; 
-		cout << c2.water << endl;
+		//cout << c2.water << endl;
 	}
 };
 
 
 int main(void)
 {
-	return 0;
+
+    return 0;
 }
+
+
 
 Note:友元类之间的关系不能传递,不能继承
