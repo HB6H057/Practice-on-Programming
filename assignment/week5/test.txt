@@ -1,0 +1,46 @@
+#include <iostream>
+#include <string.h>
+using namespace std;
+
+int Plus(char * str1, char * str2);
+
+int main(void)
+{
+
+    return 0;
+}
+
+int Plus(char * str1, char * str2)
+{
+    int flag = 0;
+    int str[101];
+    if ( strlen( str1 ) > strlen( str2 ) ) //如果第一个数比第二个数位数多的时候
+    {
+        for (unsigned int i = 0; i < strlen( str1 ); i++)
+        {
+            str[i] = (int)( str1[i] + str2[i] + flag - 0x60) % 10 + 0x30 ;   //取第i位数 
+        	flag = ( str1[i] + str2[i] + flag ) / 10; //取进位数
+        }
+        for (unsigned int  i = strlen(str1) - strlen(str2); i < strlen(str1) + 1; i++)
+        {
+                str[i] = (int)( str1[i] + flag - 0x30) % 10 + 0x30;
+                flag   = (int)( str1[i] + flag - 0x30) % 10;
+        }
+        
+        if (flag != 0)
+        {
+            str[ strlen(str1) ]    
+        }
+
+    }
+    else if ( strlen( str1 ) == strlen( str2 ) ) //两个数位数相同
+    {
+            
+    }
+    else //如果第二个比第一个数位数多
+    {
+
+    }
+
+    return 0;
+}
