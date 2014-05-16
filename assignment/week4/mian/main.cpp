@@ -1,42 +1,44 @@
 #include <iostream>
-#include <string.h>
-#include <stdio.h>
+#include <vector>
+
 using namespace std;
 
-class oper
+class bigNum
 {
 private:
-    int num1_len;
-    int num2_len;
-    int num1[100];
-    int num2[100];
-    int result[100];
-    int op;
+    vector< int > num1;     //操作数1
+    vector< int > num2;     //操作数2
+    vector< int > result;   //计算结果
+    int op;                 //计算符号
 public:
-    void getNum(void); //加载
-    void dispNum(void); //处理载入的字符串
+    void str2num(const string s1, const string s2, const string op_);
+    //处理数据
+
 };
 
-
-void oper::getNum(void)
+void bigNum::process_str(const string s1, const string s2, const string op_)
 {
-    char str1[100];
-    char str2[100];
-    char op_[2];
 
-    gets(str1);
-    gets(op_);
-    gets(str2);
+    int ix = 0; //自家
+    //符号判定
+    if ( op_[0] == '+' )
+        op = 0;
+    else if (op_[0] == '-')
+        op = 1;
+    else if (op_[0] == '*')
+        op = 2;
+    else
+        op = 3;
+    for (int i = s1.size() - 1; i < 0; i++ )
+        {
 
-    printf("%s %s %s", str1, op_, str2);
+        }
+
 
 }
 
-
 int main(void)
 {
-    oper *a;
 
-    a.getNum();
     return 0;
 }
